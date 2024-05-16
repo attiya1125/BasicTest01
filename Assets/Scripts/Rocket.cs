@@ -8,6 +8,11 @@ public class Rocket : MonoBehaviour
     private Rigidbody2D _rb2d;
     private float fuel = 100f;
 
+    float rocketPositon;
+    float bestScore;
+
+    public RectTransform front;
+
     private readonly float SPEED = 5f;
     private readonly float FUELPERSHOOT = 10f;
 
@@ -31,27 +36,33 @@ public class Rocket : MonoBehaviour
             Debug.Log("남은 연료량" + fuel);
         }
     }
+    private void Start()
+    {
+        if (PlayerPrefs.HasKey("BestScore"))
+        {
+            bestScore = PlayerPrefs.GetFloat("BestScore");
+            HighScoreTxt.text = $"HIGH : {bestScore.ToString("N2")} M";
+        }
+    }
     private void Update()
     {
-        float rocketPositon = rocket.position.y;
+        rocketPositon = rocket.position.y;
         currentScoreTxt.text = $"{rocketPositon.ToString("N2")} M";
-
-        if (PlayerPrefs.HasKey("HighScore"))
+        // 현재 점수 갱신 실시간
+        if ( rocketPositon > bestScore)
         {
-            float bestScore = PlayerPrefs.GetFloat("HIghScore");
-            if (bestScore < rocketPositon)
-            {
-                PlayerPrefs.SetFloat("HighScore", rocketPositon);
-                HighScoreTxt.text = rocketPositon.ToString("N2");
-            }
-            else
-            {
-                HighScoreTxt.text = bestScore.ToString("N2");
-            }
+            bestScore = rocketPositon;
+            HighScoreTxt.text = $"HIGH : {bestScore.ToString("N2")} M";
         }
-        else
+        // 게임이 끝나는 조건
+        if ( rocketPositon <= 0 && fuel == 0)
         {
-
+            PlayerPrefs.SetFloat("BestScore" , bestScore);
+            PlayerPrefs.Save();
         }
+    }
+    public void UseFuel()
+    {
+        front.localScale = new Vector3(1f, 0.1f, 1f);
     }
 }
