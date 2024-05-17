@@ -6,7 +6,7 @@ using UnityEngine.SocialPlatforms.Impl;
 public class Rocket : MonoBehaviour
 {
     private Rigidbody2D _rb2d;
-    private float fuel = 100f;
+    public float fuel = 100f;
 
     float rocketPositon;
     float bestScore;
@@ -18,6 +18,8 @@ public class Rocket : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI currentScoreTxt;
     [SerializeField] private TextMeshProUGUI HighScoreTxt;
+
+    public RocketDashBoard rD;
 
     public Transform rocket;
     private void Awake()
@@ -34,6 +36,7 @@ public class Rocket : MonoBehaviour
             _rb2d.AddForce(Vector2.up * SPEED, ForceMode2D.Impulse);
             fuel -= FUELPERSHOOT;
             Debug.Log("남은 연료량" + fuel);
+            rD.ChangeFuel();
         }
     }
     private void Start()
@@ -42,6 +45,7 @@ public class Rocket : MonoBehaviour
         {
             bestScore = PlayerPrefs.GetFloat("BestScore");
             HighScoreTxt.text = $"HIGH : {bestScore.ToString("N2")} M";
+            Application.targetFrameRate = 60;
         }
     }
     private void Update()
@@ -59,6 +63,10 @@ public class Rocket : MonoBehaviour
         {
             PlayerPrefs.SetFloat("BestScore" , bestScore);
             PlayerPrefs.Save();
+        }
+        if (fuel <= 100)
+        {
+            fuel += 0.1f;
         }
     }
     public void UseFuel()
